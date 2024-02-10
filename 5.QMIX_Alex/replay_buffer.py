@@ -14,12 +14,12 @@ class ReplayBuffer():
         self.buffer = {
             "obs_n" : np.zeros((self.buffer_size, self.episode_limit + 1, self.n_agents, self.obs_shape)),
             "s" : np.zeros((self.buffer_size, self.episode_limit +1, self.state_shape)),
-            "avail_a_n": np.zeros((self.buffer_size, self.episode_limit + 1, self.n_agents, self.n_actions)),
+            "avail_a_n": np.ones((self.buffer_size, self.episode_limit + 1, self.n_agents, self.n_actions)),
             "last_onehot_a_n": np.zeros((self.buffer_size, self.episode_limit + 1, self.n_agents, self.n_actions)),
-            "a_n": np.zeros((self.buffer_size, self.episode_limit + 1, self.n_agents)),
-            "r": np.zeros((self.buffer_size, self.episode_limit + 1, 1)),
-            "dw": np.zeros((self.buffer_size, self.episode_limit + 1, 1)),
-            "active": np.zeros((self.buffer_size, self.episode_limit + 1 , 1))
+            "a_n": np.zeros((self.buffer_size, self.episode_limit, self.n_agents)),
+            "r": np.zeros((self.buffer_size, self.episode_limit, 1)),
+            "dw": np.zeros((self.buffer_size, self.episode_limit, 1)),
+            "active": np.zeros((self.buffer_size, self.episode_limit, 1))
         }
         self.episode_len = np.zeros(self.buffer_size)
 
@@ -42,24 +42,27 @@ class ReplayBuffer():
         self.buffer['avail_a_n'][self.episode_num][episode_step] = avail_a_n 
 
         self.episode_len[self.episode_num] = episode_step
-        self.episode_num = (self.episode_num + 1) % self.batch_size  # after reaching buffer size, episode_num gets reseted to zero, implementing a deque 
+
+        # All transitions of the episode are stored, move to next one
+        self.episode_num = (self.episode_num + 1) % self.buffer_size  # after reaching buffer size, episode_num gets reseted to zero, implementing a deque 
         self.current_size = min(self.current_size + 1, self.buffer_size)
 
     def sample(self):
         
-        indices = np.random.choice(range(self.current_size), size=self.batch_size, replace=False)
+        indices = np.random.choice(self.current_size, size=self.batch_size, replace=False)
         max_episode_len = int(np.max(self.episode_len[indices]))
-        print(indices)
+        # print(indices)
+        # print(max_episode_len)
 
         buffer = {
-            "obs_n" : self.buffer['obs_n'][indices],
-            "s" : self.buffer['s'][indices],
-            "avail_a_n": self.buffer['avail_a_n'][indices],
-            "last_onehot_a_n": self.buffer['last_onehot_a_n'][indices],
-            "a_n": self.buffer['a_n'][indices],
-            "r": self.buffer['r'][indices],
-            "dw": self.buffer['dw'][indices],
-            "active": self.buffer['active'][indices]
+            "obs_n" : self.buffer['obs_n'][indices, :max_episode_len + 1],
+            "s" : self.buffer['s'][indices, :max_episode_len + 1],
+            "avail_a_n": self.buffer['avail_a_n'][indices, :max_episode_len + 1],
+            "last_onehot_a_n": self.buffer['last_onehot_a_n'][indices, :max_episode_len + 1],
+            "a_n": self.buffer['a_n'][indices, :max_episode_len],
+            "r": self.buffer['r'][indices, :max_episode_len],
+            "dw": self.buffer['dw'][indices, :max_episode_len],
+            "active": self.buffer['active'][indices, :max_episode_len]
         }
 
         return buffer, max_episode_len
