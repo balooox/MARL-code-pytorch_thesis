@@ -66,9 +66,9 @@ class QMIX_SMAC_Runner():
         last_onehot_a_n = np.zeros((self.args.n_agents, self.args.n_actions))
 
         for episode_step in range(self.args.episode_limit):
-            obs_n = self.env.get_obs() # (n_agents, obs_shape) -> (3,30)
-            s = self.env.get_state()
-            avail_a_n = self.env.get_avail_actions()
+            obs_n = self.env.get_obs() # (n_agents, obs_shape) -> (3, 30)
+            s = self.env.get_state() #  (observation_features, ) -> (48, )
+            avail_a_n = self.env.get_avail_actions() # (n_agents, n_actions) -> (3, 9)
             #print('avail_action')
             #print(avail_a_n)
 
@@ -87,10 +87,13 @@ class QMIX_SMAC_Runner():
             if not evaluate:
 
                 if done and episode_step + 1 != self.args.episode_limit:
-                    dw = True
+                    dw = True # we are done, because the game is finished (we are either dead or won) -> there is no next state
                 else:
-                    dw = False
+                    dw = False # we are done, because the epsisode limit was reached -> there would be a next state
 
+                # Store the current transition
+                # obs_n, s, avail_a_n, a_n, r, dw are stored in the transition item of this state
+                # last_one_hot_a_n is stored in the transition item of the next state
                 self.replay_buffer.store_transition(episode_step, obs_n, s, avail_a_n, last_onehot_a_n, a_n, r, dw)
 
                 self.epsilon = self.epsilon - self.args.epsilon_decay if self.epsilon - self.args.epsilon_decay > self.args.epsilon_min else self.args.epsilon_min

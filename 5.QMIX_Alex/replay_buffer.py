@@ -41,6 +41,8 @@ class ReplayBuffer():
         self.buffer['s'][self.episode_num][episode_step] = s
         self.buffer['avail_a_n'][self.episode_num][episode_step] = avail_a_n 
 
+        # If episode_len is for example 30, then there are 30 normal transition (0,1,2..., 29) and 1 last transition (30)
+        # If epsiode_len is 30, then 31 items are stored
         self.episode_len[self.episode_num] = episode_step
 
         # All transitions of the episode are stored, move to next one
