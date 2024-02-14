@@ -172,7 +172,7 @@ class QMIX_SMAC():
             # print('---avail_a_n---')
             # print(avail_a_n)
 
-            q_target = torch.where(torch.tensor(avail_a_n, dtype=bool), q_target, torch.tensor(-999))
+            q_target = torch.where(torch.tensor(avail_a_n, dtype=bool), q_target, torch.tensor(-999999.0))
             # print('---avail q_target---')
             # print(q_target)
 

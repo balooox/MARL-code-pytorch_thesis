@@ -13,7 +13,7 @@ class QMIX_SMAC_Runner():
     def __init__(self, args, env_name) -> None:
         self.args = args
         self.env_name = '3m'
-        self.number = 1
+        self.number = 4
         self.seed = 0
         # Set random seed
         np.random.seed(self.seed)
@@ -129,11 +129,11 @@ class QMIX_SMAC_Runner():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--max_time_steps', type=int, default=1e6)
+    parser.add_argument('--max_time_steps', type=int, default=int(1e6))
     parser.add_argument('--evaluation_freq', type=int, default=5000)
     parser.add_argument('--evaluation_length', type=int, default=32)
 
-    parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--lr', type=float, default=5e-4)
     parser.add_argument('--epsilon_start', type=float, default=0.9)
     parser.add_argument('--epsilon_min', type=float, default=0.05)
     parser.add_argument('--epsilon_decay_steps', type=int, default=50000)

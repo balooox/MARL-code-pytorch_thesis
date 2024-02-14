@@ -17,7 +17,7 @@ class ReplayBuffer():
             "avail_a_n": np.ones((self.buffer_size, self.episode_limit + 1, self.n_agents, self.n_actions)),
             "last_onehot_a_n": np.zeros((self.buffer_size, self.episode_limit + 1, self.n_agents, self.n_actions)),
             "a_n": np.zeros((self.buffer_size, self.episode_limit, self.n_agents)),
-            "r": np.zeros((self.buffer_size, self.episode_limit, 1)),
+            "r": np.ones((self.buffer_size, self.episode_limit, 1)),
             "dw": np.zeros((self.buffer_size, self.episode_limit, 1)),
             "active": np.zeros((self.buffer_size, self.episode_limit, 1))
         }
